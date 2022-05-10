@@ -8,7 +8,7 @@ build-and-execute:
 
 .PHONY: build
 build:
-	go build -o ${APP} main.go
+	go build -ldflags "-X main.GitCommit=${GIT_COMMIT}" -o ${APP} main.go
 
 .PHONY: run
 run:

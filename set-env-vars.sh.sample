@@ -1,0 +1,5 @@
+# Copy this file and rename this from 'set-env-vars.sh.sample' to 'set-env-vars.sh'
+# Set all the env variables here
+#!/bin/bash
+
+export VAR1=VAR_VALUE_HERE
