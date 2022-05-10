@@ -14,9 +14,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse) {
+func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse, api_key string) {
 	client := http.Client{Timeout: TIMEOUT * time.Second}
-	url := fmt.Sprintf("https://api.razorpay.com/v1/payments/validate/account?key_id=%s", os.Getenv("RAZORPAY_LIVE_API_KEY"))
+	url := fmt.Sprintf("https://api.razorpay.com/v1/payments/validate/account?key_id=%s", api_key)
 
 	for vpa := range vpasChan {
 		result := VPAResponse{

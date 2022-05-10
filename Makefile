@@ -4,7 +4,7 @@ GIT_COMMIT=$(shell git rev-parse --short=10 HEAD)
 
 .PHONY: build-and-execute
 build-and-execute:
-	chmod +x ./set-env-vars.sh && . ./set-env-vars.sh && go build -ldflags "-X main.GitCommit=${GIT_COMMIT}" -o ${APP} main.go && chmod +x ./${APP} && ./${APP}
+	go build -ldflags "-X main.GitCommit=${GIT_COMMIT}" -o ${APP} main.go && chmod +x ./${APP} && ./${APP}
 
 .PHONY: build
 build:

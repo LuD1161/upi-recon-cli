@@ -12,6 +12,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // checkUpiCmd represents the checkUpi command
@@ -25,8 +26,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 		if check_is_a_number(args[0]) {
-			checkUpi(args[0])
+			checkUpi(args[0], api_key)
 		}
 	},
 }
@@ -46,7 +48,7 @@ func init() {
 
 }
 
-func checkUpi(number string) {
+func checkUpi(number string, api_key string) {
 	maxGoroutines := 1000
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -71,7 +73,7 @@ func checkUpi(number string) {
 	vpasChan := make(chan string, maxGoroutines)
 	resultsChan := make(chan VPAResponse)
 	for i := 0; i < maxGoroutines; i++ {
-		go MakeRequest(vpasChan, resultsChan)
+		go MakeRequest(vpasChan, resultsChan, api_key)
 	}
 
 	go func() {
