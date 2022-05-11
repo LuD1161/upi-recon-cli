@@ -14,6 +14,8 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var (
+	threads     int
+	timeout     int
 	cfgFile     string
 	userLicense string
 	rootCmd     = &cobra.Command{
@@ -25,7 +27,12 @@ Get the user's name as well.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 			if len(args) > 0 && check_is_a_number(args[0]) {
-				checkUpi(args[0], api_key)
+				vpaSuffixes, err := readLines("data/vpa_suffixes.txt")
+				if err != nil {
+					log.Error().Msg("Error reading 'data/vpa_suffixes.txt'")
+					os.Exit(1)
+				}
+				checkUpi(args[0], vpaSuffixes, api_key)
 			} else {
 				cmd.Help()
 			}
@@ -50,10 +57,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.yaml", "config file")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().Int32P("threads", "t", 100, "No of threads")
+	rootCmd.PersistentFlags().IntVarP(&threads, "threads", "t", 100, "No of threads")
+	rootCmd.PersistentFlags().IntVarP(&timeout, "timeout", "", 15, "Timeout for requests")
 }
 
 func initConfig() {

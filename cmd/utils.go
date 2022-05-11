@@ -17,7 +17,7 @@ import (
 )
 
 func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse, api_key string) {
-	client := http.Client{Timeout: TIMEOUT * time.Second}
+	client := http.Client{Timeout: time.Duration(timeout) * time.Second}
 	url := fmt.Sprintf("https://api.razorpay.com/v1/payments/validate/account?key_id=%s", api_key)
 
 	for vpa := range vpasChan {
@@ -27,7 +27,6 @@ func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse, api_key
 			CustomerName: "",
 			Error:        nil,
 		}
-
 		payload := strings.NewReader(fmt.Sprintf(`{
 			"entity": "vpa",
 			"value": "%s"
@@ -89,8 +88,7 @@ func check_is_a_number(number string) bool {
 	return re.MatchString(number)
 }
 
-func checkUpi(number string, api_key string) {
-	maxGoroutines := 1000
+func checkUpi(number string, suffixes_array []string, api_key string) {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -99,27 +97,20 @@ func checkUpi(number string, api_key string) {
 		os.Exit(0)
 	}()
 
-	vpaSuffixes, err := readLines("data/vpa_suffixes.txt")
-	if err != nil {
-		log.Error().Msg("Error reading 'data/vpa_suffixes.txt'")
-		os.Exit(1)
-	}
-
 	vpas := make([]string, 0)
-	for _, vpaSuffix := range vpaSuffixes {
+	for _, vpaSuffix := range suffixes_array {
 		vpa := fmt.Sprintf("%s@%s", number, vpaSuffix)
 		vpas = append(vpas, vpa)
 	}
-	log.Info().Msgf("Unique VPAs : %d", len(vpas))
-	vpasChan := make(chan string, maxGoroutines)
+
+	vpasChan := make(chan string, threads)
 	resultsChan := make(chan VPAResponse)
-	for i := 0; i < maxGoroutines; i++ {
+	for i := 0; i < threads; i++ {
 		go MakeRequest(vpasChan, resultsChan, api_key)
 	}
 
 	go func() {
 		for _, vpa := range vpas {
-			log.Debug().Msgf("Working on  : %s", vpa)
 			vpasChan <- vpa
 		}
 	}()
