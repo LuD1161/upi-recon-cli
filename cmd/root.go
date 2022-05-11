@@ -5,9 +5,9 @@ Copyright © 2022 Aseem Shrey
 package cmd
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -17,15 +17,17 @@ var (
 	cfgFile     string
 	userLicense string
 	rootCmd     = &cobra.Command{
-		Use:   "upi-recon-cli",
+		Use:   "upi-recon-cli PHONE_NUMBER",
 		Args:  cobra.ArbitraryArgs, // https://github.com/spf13/cobra/issues/42
 		Short: "Check UPI ids corresponding to a mobile number",
 		Long: `Check virtual payment address corresponding to a mobile number.
 Get the user's name as well.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
-			if check_is_a_number(args[0]) {
+			if len(args) > 0 && check_is_a_number(args[0]) {
 				checkUpi(args[0], api_key)
+			} else {
+				cmd.Help()
 			}
 		},
 	}
@@ -47,12 +49,11 @@ func init() {
 
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
-	rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.yaml", "config file")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().Int32P("threads", "t", 1000, "No of threads")
+	rootCmd.Flags().Int32P("threads", "t", 100, "No of threads")
 }
 
 func initConfig() {
@@ -60,19 +61,15 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name ".cobra" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(".")
+		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".cobra")
 	}
 
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
 	}
 }

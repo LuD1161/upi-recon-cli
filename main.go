@@ -15,8 +15,12 @@ import (
 func init() {
 	// set log settings
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	log.Logger = log.With().Caller().Logger()
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if os.Getenv("DEBUG") == "True" {
+		log.Logger = log.With().Caller().Logger()
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
 }
 
 var GitCommit string // set using go build ldflags "-X main.GitCommit"

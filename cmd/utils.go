@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/signal"
 	"regexp"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -85,4 +87,52 @@ func readLines(path string) ([]string, error) {
 func check_is_a_number(number string) bool {
 	var re = regexp.MustCompile(`(?m)[6-9]\d{9}`)
 	return re.MatchString(number)
+}
+
+func checkUpi(number string, api_key string) {
+	maxGoroutines := 1000
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigs
+		log.Info().Msg("Got signal to close the program")
+		os.Exit(0)
+	}()
+
+	vpaSuffixes, err := readLines("data/vpa_suffixes.txt")
+	if err != nil {
+		log.Error().Msg("Error reading 'data/vpa_suffixes.txt'")
+		os.Exit(1)
+	}
+
+	vpas := make([]string, 0)
+	for _, vpaSuffix := range vpaSuffixes {
+		vpa := fmt.Sprintf("%s@%s", number, vpaSuffix)
+		vpas = append(vpas, vpa)
+	}
+	log.Info().Msgf("Unique VPAs : %d", len(vpas))
+	vpasChan := make(chan string, maxGoroutines)
+	resultsChan := make(chan VPAResponse)
+	for i := 0; i < maxGoroutines; i++ {
+		go MakeRequest(vpasChan, resultsChan, api_key)
+	}
+
+	go func() {
+		for _, vpa := range vpas {
+			log.Debug().Msgf("Working on  : %s", vpa)
+			vpasChan <- vpa
+		}
+	}()
+
+	found_any := false
+	for i := 0; i < len(vpas); i++ {
+		result := <-resultsChan
+		if result.Error == nil && result.Success == true && result.CustomerName != "" {
+			log.Info().Msgf("✅ Customer Name : %s | VPA : %s", result.CustomerName, result.VPA)
+			found_any = true
+		}
+	}
+	if found_any == false {
+		log.Info().Msgf("Checked %d unique VPAs. Found None ❌", len(vpas))
+	}
 }
