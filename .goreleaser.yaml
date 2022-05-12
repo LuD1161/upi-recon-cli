@@ -4,6 +4,7 @@ archives:
     files:
       - data/*
       - README.md
+      - config.yaml.sample
       
 release:
   # Repo in which the release will be created.

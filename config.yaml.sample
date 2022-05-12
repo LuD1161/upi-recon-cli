@@ -1,1 +1,2 @@
+# Rename this file to 'config.yaml' and insert the razorpay live key here
 RAZORPAY_LIVE_API_KEY: <RAZORPAY_LIVE_KEY_HERE>
