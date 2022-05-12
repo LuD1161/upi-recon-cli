@@ -5,6 +5,7 @@ archives:
       - data/*
       - README.md
       - config.yaml.sample
+      - LICENSE
       
 release:
   # Repo in which the release will be created.

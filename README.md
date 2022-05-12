@@ -7,6 +7,7 @@ This tool leverages the openness available with the UPI platform to find :
 2. UPI ID and name associated with a gmail account
 3. UPI ID and name associated with a vehicle registration number. Leveraging UPI id associated with a FASTag.
 
+This project is a golang port of [upi-recon](https://github.com/qurbat/upi-recon/) by [@squeal](https://twitter.com/squeal).
 
 # Overview
 
@@ -89,11 +90,5 @@ Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard
 This is [Aseem](https://aseemshrey.in). I'm a security engineer from India 🇮🇳.<br/>I am always curious about learning and building new things. Teaching security stuff through my youtube channel. Ping me up for anything related to security 🙌
 
 
-<a href="https://twitter.com/intent/follow?screen_name=AseemShrey"><img src="https://img.shields.io/twitter/follow/AseemShrey?style=social&logo=twitter" alt="follow on Twitter"></a>
-<a href="https://youtube.com/c/HackingSimplifiedAS?sub_confirmation=1"><img src="https://img.shields.io/youtube/channel/subscribers/UCARsgS1stRbRgh99E63Q3ng?label=HackingSimplified&style=social" alt="Subscribe on Youtube"></a>
-
-
-## Acknowledgements
-
-This project was inspired by [upi-recon](https://github.com/qurbat/upi-recon/) by [@squeal](https://twitter.com/squeal).
-
+<a href="https://twitter.com/intent/follow?screen_name=AseemShrey" target="_blank"><img src="https://img.shields.io/twitter/follow/AseemShrey?style=social&logo=twitter" alt="follow on Twitter"></a>
+<a href="https://youtube.com/c/HackingSimplifiedAS?sub_confirmation=1" target="_blank"><img src="https://img.shields.io/youtube/channel/subscribers/UCARsgS1stRbRgh99E63Q3ng?label=HackingSimplified&style=social" alt="Subscribe on Youtube"></a>
