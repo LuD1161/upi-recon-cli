@@ -1,0 +1,44 @@
+# .goreleaser.yaml
+archives:
+  -
+    files:
+      - data/*
+      - README.md
+      
+release:
+  # Repo in which the release will be created.
+  # Default is extracted from the origin remote URL or empty if its private hosted.
+  github:
+    owner: LuD1161
+    name: upi-recon-cli
+
+
+  # What to do with the release notes in case there the release already exists.
+  #
+  # Valid options are:
+  # - `keep-existing`: keep the existing notes
+  # - `append`: append the current release notes to the existing notes
+  # - `prepend`: prepend the current release notes to the existing notes
+  # - `replace`: replace existing notes
+  #
+  # Default is `keep-existing`.
+  mode: append
+
+  # Header template for the release body.
+  # Defaults to empty.
+  header: |
+    ## {{ .Tag }} ({{ .Date }})
+
+    Welcome to this new release!
+
+  # Footer template for the release body.
+  # Defaults to empty.
+  footer: |
+    ## Thanks!
+
+    Those were the changes on {{ .Tag }}!
+
+  # You can change the name of the release.
+  # Default is `{{.Tag}}` on OSS and `{{.PrefixedTag}}` on Pro.
+  name_template: "{{.ProjectName}}-v{{.Version}}"
+
