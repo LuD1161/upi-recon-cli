@@ -89,7 +89,8 @@ Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard
 This is [Aseem](https://aseemshrey.in). I'm a security engineer from India 🇮🇳.<br/>I am always curious about learning and building new things. Teaching security stuff through my youtube channel. Ping me up for anything related to security 🙌
 
 
-![Twitter Follow](https://img.shields.io/twitter/follow/AseemShrey?style=social) ![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCARsgS1stRbRgh99E63Q3ng?label=HackingSimplified&style=social)
+<a href="https://twitter.com/intent/follow?screen_name=AseemShrey"><img src="https://img.shields.io/twitter/follow/AseemShrey?style=social&logo=twitter" alt="follow on Twitter"></a>
+<a href="https://youtube.com/c/HackingSimplifiedAS?sub_confirmation=1"><img src="https://img.shields.io/youtube/channel/subscribers/UCARsgS1stRbRgh99E63Q3ng?label=HackingSimplified&style=social" alt="Subscribe on Youtube"></a>
 
 
 ## Acknowledgements
