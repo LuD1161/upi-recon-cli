@@ -5,6 +5,7 @@ Copyright © 2022 Aseem Shrey
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -53,9 +54,9 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-
+	fmt.Println(banner)
 	cobra.OnInitialize(initConfig)
-
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.yaml", "config file")
 	rootCmd.PersistentFlags().IntVarP(&threads, "threads", "t", 100, "No of threads")
 	rootCmd.PersistentFlags().IntVarP(&timeout, "timeout", "", 15, "Timeout for requests")
