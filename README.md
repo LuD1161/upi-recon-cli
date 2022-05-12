@@ -48,9 +48,45 @@ Use "upi-recon-cli [command] --help" for more information about a command.****
 ```
 ![](images/usage-mobile-number.png)
 
+### Checking a Vehicle Number for the Owner's name and UPI IDs
+```sh
+./upi-recon-cli checkFastag <VEHICLE_NUMBER>
+```
+![](images/usage-fastag.png)
+
+
+### Checking a Gmail ID for the Owner's name and UPI IDs
+```sh
+./upi-recon-cli checkGpay <GMAIL_ID>
+```
+![](images/usage-google.png)
+
+
+## Installation
+
+1. Download the binaries for your platform from [releases page](https://github.com/LuD1161/upi-recon-cli/releases).
+2. Extract the `tar.gz` file.
+You'd find the following file strucuture inside the extracted folder : 
+```sh
+.
+├── README.md
+├── data
+│   ├── fastag_suffixes.txt
+│   ├── gpay_suffixes.txt
+│   ├── test_suffixes.txt
+│   └── vpa_suffixes.txt
+├── config.yaml.sample
+└── upi-recon-cli
+
+1 directory, 7 files
+```
+3. Rename the `config.yaml.sample` file to `config.yaml` and add the razorpay live api key into it. 
+Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard/settings/api-keys/) provided by Razorpay in order to generate valid live API credentials.
+<br/>**Note**: Razorpay `test` credentials will not work.
+4. That's it. You're ready to go 🎉🚀
 ## 🚀 About Me
 
-This is Aseem. I'm a security engineer from India 🇮🇳.<br/>I love building and teaching security stuff. Ping me up for anything related to security 🙌
+This is [Aseem](https://aseemshrey.in). I'm a security engineer from India 🇮🇳.<br/>I am always curious about learning and building new things. Teaching security stuff through my youtube channel. Ping me up for anything related to security 🙌
 
 
 ![Twitter Follow](https://img.shields.io/twitter/follow/AseemShrey?style=social) ![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCARsgS1stRbRgh99E63Q3ng?label=HackingSimplified&style=social)

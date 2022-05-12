@@ -20,11 +20,9 @@ var (
 	cfgFile     string
 	userLicense string
 	rootCmd     = &cobra.Command{
-		Use:   "upi-recon-cli PHONE_NUMBER",
-		Args:  cobra.ArbitraryArgs, // https://github.com/spf13/cobra/issues/42
-		Short: "Check UPI ids corresponding to a mobile number",
-		Long: `Check virtual payment address corresponding to a mobile number.
-Get the user's name as well.`,
+		Use:  "upi-recon-cli PHONE_NUMBER",
+		Args: cobra.ArbitraryArgs, // https://github.com/spf13/cobra/issues/42
+		Long: `Check virtual payment address corresponding to a mobile number, email address and get user's name as well.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 			if len(args) > 0 && check_is_a_number(args[0]) {
