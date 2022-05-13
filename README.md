@@ -43,7 +43,7 @@ Flags:
 Use "upi-recon-cli [command] --help" for more information about a command.****
 ```
 
-### Checking a mobile number for the Owner's name and UPI IDs
+### Checking a Mobile number for the Owner's name and UPI IDs
 ```sh
 ./upi-recon-cli <MOBILE_NUMBER_HERE>
 ```
