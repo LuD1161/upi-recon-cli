@@ -1,4 +1,42 @@
-# .goreleaser.yaml
+builds:
+  # You can have multiple builds defined as a yaml list
+  -
+    # Custom ldflags templates.
+    # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
+    ldflags:
+      - -X main.commit={{.Commit}}
+
+    # Custom environment variables to be set during the builds.
+    # Default is empty.
+    env:
+      - CGO_ENABLED=0
+
+    # GOOS list to build for.
+    # For more info refer to: https://golang.org/doc/install/source#environment
+    # Defaults are darwin and linux.
+    goos:
+      - freebsd
+      - windows
+      - darwin
+      - openbsd
+      - linux
+      - netbsd
+
+    # GOARCH to build for.
+    # For more info refer to: https://golang.org/doc/install/source#environment
+    # Defaults are 386, amd64 and arm64.
+    goarch:
+      - amd64
+      - arm
+      - arm64
+
+    # GOARM to build for when GOARCH is arm.
+    # For more info refer to: https://golang.org/doc/install/source#environment
+    # Default is only 6.
+    goarm:
+      - 6
+      - 7
+
 archives:
   -
     files:
@@ -6,7 +44,8 @@ archives:
       - README.md
       - config.yaml.sample
       - LICENSE
-      
+
+
 release:
   # Repo in which the release will be created.
   # Default is extracted from the origin remote URL or empty if its private hosted.

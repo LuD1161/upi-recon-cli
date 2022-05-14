@@ -36,6 +36,7 @@ var (
 				cmd.Help()
 			}
 		},
+		Version: fmt.Sprintf("0.1.1"),
 	}
 )
 

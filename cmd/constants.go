@@ -10,4 +10,6 @@ const banner = `
 
 			#  Author: Aseem Shrey (@aseemshrey)
 			#  URL: https://github.com/LuD1161/upi-recon-cli
+			#  Website : https://aseemshrey.in
+			#  YouTube : https://www.youtube.com/c/HackingSimplifiedAS
 `
