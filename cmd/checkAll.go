@@ -9,7 +9,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // checkAllCmd represents the checkAll command
@@ -17,7 +16,6 @@ var checkAllCmd = &cobra.Command{
 	Use:   "checkAll",
 	Short: "Check a particular number against all UPI identifiers.",
 	Run: func(cmd *cobra.Command, args []string) {
-		api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 		if len(args) > 0 && check_is_a_number(args[0]) {
 			vpaSuffixes, err := readLines("data/all_suffixes.txt")
 			if err != nil {

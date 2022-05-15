@@ -10,7 +10,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // checkGpayCmd represents the checkGpay command
@@ -18,7 +17,6 @@ var checkGpayCmd = &cobra.Command{
 	Use:   "checkGpay EMAIL_ID",
 	Short: "Check gmail id corresponding to GPay suffixes.",
 	Run: func(cmd *cobra.Command, args []string) {
-		api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 		if len(args) > 0 {
 			gpaySuffixes, err := readLines("data/gpay_suffixes.txt")
 			if err != nil {
