@@ -13,15 +13,17 @@ This project is a golang port of [upi-recon](https://github.com/qurbat/upi-recon
 
 ```sh
 
-		_    _ _____ _____   _____                         _____ _      _____
-		| |  | |  __ \_   _| |  __ \                       / ____| |    |_   _|
-		| |  | | |__) || |   | |__) |___  ___ ___  _ __   | |    | |      | |
-		| |  | |  ___/ | |   |  _  // _ \/ __/ _ \| '_ \  | |    | |      | |
-		| |__| | |    _| |_  | | \ \  __/ (_| (_) | | | | | |____| |____ _| |_
-		\____/|_|   |_____| |_|  \_\___|\___\___/|_| |_|  \_____|______|_____|
+                _    _ _____ _____   _____                         _____ _      _____ 
+                | |  | |  __ \_   _| |  __ \                       / ____| |    |_   _|
+                | |  | | |__) || |   | |__) |___  ___ ___  _ __   | |    | |      | |  
+                | |  | |  ___/ | |   |  _  // _ \/ __/ _ \| '_ \  | |    | |      | |  
+                | |__| | |    _| |_  | | \ \  __/ (_| (_) | | | | | |____| |____ _| |_ 
+                \____/|_|   |_____| |_|  \_\___|\___\___/|_| |_|  \_____|______|_____|
 
-			#  Author: Aseem Shrey (@aseemshrey)
-			#  URL: https://github.com/LuD1161/upi-recon-cli
+                        #  Author: Aseem Shrey (@aseemshrey)
+                        #  URL: https://github.com/LuD1161/upi-recon-cli
+                        #  Website : https://aseemshrey.in
+                        #  YouTube : https://www.youtube.com/c/HackingSimplifiedAS
 
 Check virtual payment address corresponding to a mobile number, email address and get user's name as well.
 
@@ -30,6 +32,7 @@ Usage:
   upi-recon-cli [command]
 
 Available Commands:
+  checkAll    Check a particular number against all UPI identifiers.
   checkFastag Check FASTag suffixes for vehicle registration number.
   checkGpay   Check gmail id corresponding to GPay suffixes.
   help        Help about any command
@@ -39,8 +42,9 @@ Flags:
   -h, --help            help for upi-recon-cli
   -t, --threads int     No of threads (default 100)
       --timeout int     Timeout for requests (default 15)
+  -v, --version         version for upi-recon-cli
 
-Use "upi-recon-cli [command] --help" for more information about a command.****
+Use "upi-recon-cli [command] --help" for more information about a command.
 ```
 
 ### Checking a Mobile number for the Owner's name and UPI IDs
@@ -70,16 +74,17 @@ Use "upi-recon-cli [command] --help" for more information about a command.****
 You'd find the following file strucuture inside the extracted folder : 
 ```sh
 .
+├── LICENSE
 ├── README.md
+├── config.yaml.sample
 ├── data
+│   ├── all_suffixes.txt
 │   ├── fastag_suffixes.txt
 │   ├── gpay_suffixes.txt
-│   ├── all_suffixes.txt
 │   └── mobile_suffixes.txt
-├── config.yaml.sample
 └── upi-recon-cli
 
-1 directory, 7 files
+1 directory, 8 files
 ```
 3. Rename the `config.yaml.sample` file to `config.yaml` and add the razorpay live api key into it. 
 Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard/settings/api-keys/) provided by Razorpay in order to generate valid live API credentials.
