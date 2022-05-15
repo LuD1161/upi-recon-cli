@@ -26,9 +26,9 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 			if len(args) > 0 && check_is_a_number(args[0]) {
-				vpaSuffixes, err := readLines("data/vpa_suffixes.txt")
+				vpaSuffixes, err := readLines("data/mobile_suffixes.txt")
 				if err != nil {
-					log.Error().Msg("Error reading 'data/vpa_suffixes.txt'")
+					log.Error().Msg("Error reading 'data/mobile_suffixes.txt'")
 					os.Exit(1)
 				}
 				checkUpi(args[0], vpaSuffixes, api_key)
@@ -36,7 +36,7 @@ var (
 				cmd.Help()
 			}
 		},
-		Version: fmt.Sprintf("0.1.1"),
+		Version: fmt.Sprintf("0.1.2"),
 	}
 )
 
