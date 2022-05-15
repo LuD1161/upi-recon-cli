@@ -24,7 +24,6 @@ var (
 		Args: cobra.ArbitraryArgs, // https://github.com/spf13/cobra/issues/42
 		Long: `Check virtual payment address corresponding to a mobile number, email address and get user's name as well.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 			if len(args) > 0 && check_is_a_number(args[0]) {
 				vpaSuffixes, err := readLines("data/mobile_suffixes.txt")
 				if err != nil {
@@ -76,5 +75,12 @@ func initConfig() {
 
 	if err := viper.ReadInConfig(); err == nil {
 		log.Debug().Msgf("Using config file: %s", viper.ConfigFileUsed())
+		var ok bool
+		api_key, ok = viper.Get("RAZORPAY_LIVE_API_KEY").(string)
+		if !ok {
+			log.Fatal().Msgf("🚨 RAZORPAY_LIVE_API_KEY not set. Please take a look at config.yaml.sample file and check the installation instructions.")
+		}
+	} else {
+		log.Fatal().Msgf("🚨Config file not found.\n✅ Pass in the config file location with -c option or place the config.yaml in this directory itself.")
 	}
 }

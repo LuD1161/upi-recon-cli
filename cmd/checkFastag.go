@@ -10,7 +10,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // checkFastagCmd represents the checkFastag command
@@ -18,7 +17,6 @@ var checkFastagCmd = &cobra.Command{
 	Use:   "checkFastag VEHICLE_NUMBER",
 	Short: "Check FASTag suffixes for vehicle registration number.",
 	Run: func(cmd *cobra.Command, args []string) {
-		api_key := viper.Get("RAZORPAY_LIVE_API_KEY").(string)
 		if len(args) > 0 {
 			fastTagSuffixes, err := readLines("data/fastag_suffixes.txt")
 			if err != nil {
