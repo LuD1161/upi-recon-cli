@@ -97,6 +97,12 @@ Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/LuD1161/upi-recon-cli)
 
+
+## Acknowledgements
+
+- Karan S ([@squeal](https://twitter.com/squeal)): authored upi-recon
+- Srikanth L ([@logic](https://twitter.com/logic)): contributed suffix files, introduced support for Google Pay & FASTag addresses
+
 ## 🚀 About Me
 
 This is [Aseem](https://aseemshrey.in). I'm a security engineer from India 🇮🇳.<br/>I am always curious about learning and building new things. Teaching security stuff through my youtube channel. Ping me up for anything related to security 🙌
