@@ -24,7 +24,7 @@ var checkFastagCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			vpa := fmt.Sprintf("netc.%s", args[0])
-			checkUpi(vpa, fastTagSuffixes, api_key)
+			checkUpi(vpa, fastTagSuffixes)
 		} else {
 			log.Error().Msgf("❌ Please enter vehicle registration number")
 			cmd.Help()

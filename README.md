@@ -7,8 +7,6 @@ This tool leverages the openness available with the UPI platform to find :
 2. UPI ID and name associated with a gmail account
 3. UPI ID and name associated with a vehicle registration number. Leveraging UPI id associated with a FASTag.
 
-**NOTE** : You won't get any results as of now, since razorpay has limited the data that was being sent. Need to find alternative APIs that can help with this. Check [Issue#6](https://github.com/LuD1161/upi-recon-cli/issues/6)
-
 This project is a golang port of [upi-recon](https://github.com/qurbat/upi-recon/) by [@squeal](https://twitter.com/squeal).
 
 # Overview
@@ -40,7 +38,6 @@ Available Commands:
   help        Help about any command
 
 Flags:
-  -c, --config string   config file (default "config.yaml")
   -h, --help            help for upi-recon-cli
   -t, --threads int     No of threads (default 100)
       --timeout int     Timeout for requests (default 15)
@@ -78,7 +75,6 @@ You'd find the following file strucuture inside the extracted folder :
 .
 ├── LICENSE
 ├── README.md
-├── config.yaml.sample
 ├── data
 │   ├── all_suffixes.txt
 │   ├── fastag_suffixes.txt
@@ -86,12 +82,9 @@ You'd find the following file strucuture inside the extracted folder :
 │   └── mobile_suffixes.txt
 └── upi-recon-cli
 
-1 directory, 8 files
+1 directory, 7 files
 ```
-3. Rename the `config.yaml.sample` file to `config.yaml` and add the razorpay live api key into it. 
-Please [refer to the documentation](https://razorpay.com/docs/payments/dashboard/settings/api-keys/) provided by Razorpay in order to generate valid live API credentials.
-<br/>**Note**: Razorpay `test` credentials will not work.
-4. That's it. You're ready to go 🎉🚀
+3. That's it. You're ready to go 🎉🚀
 
 ## Run with Gitpod
 

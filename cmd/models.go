@@ -2,7 +2,7 @@ package cmd
 
 type VPAResponse struct {
 	VPA          string `json:"vpa"`
-	Success      bool   `json:"success"`
+	Status       string `json:"status"`
 	CustomerName string `json:"customer_name"`
 	Error        error  `json:"error"`
 }

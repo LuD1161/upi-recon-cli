@@ -22,7 +22,7 @@ var checkAllCmd = &cobra.Command{
 				log.Error().Msg("Error reading 'data/all_suffixes.txt'")
 				os.Exit(1)
 			}
-			checkUpi(args[0], vpaSuffixes, api_key)
+			checkUpi(args[0], vpaSuffixes)
 		} else {
 			cmd.Help()
 		}

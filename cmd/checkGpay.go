@@ -27,7 +27,7 @@ var checkGpayCmd = &cobra.Command{
 			if strings.HasSuffix(email_id, "@gmail.com") {
 				vpa_suffix = email_id[:len(email_id)-10]
 			}
-			checkUpi(vpa_suffix, gpaySuffixes, api_key)
+			checkUpi(vpa_suffix, gpaySuffixes)
 		} else {
 			log.Error().Msgf("❌ Please enter vehicle registration number")
 			cmd.Help()

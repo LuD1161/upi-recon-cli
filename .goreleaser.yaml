@@ -42,7 +42,6 @@ archives:
     files:
       - data/*
       - README.md
-      - config.yaml.sample
       - LICENSE
 
 

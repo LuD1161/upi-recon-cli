@@ -16,21 +16,20 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse, api_key string) {
+func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse) {
 	client := http.Client{Timeout: time.Duration(timeout) * time.Second}
-	url := fmt.Sprintf("https://api.razorpay.com/v1/payments/validate/account?key_id=%s", api_key)
+	url := "https://api.juspay.in/upi/verify-vpa"
 
 	for vpa := range vpasChan {
 		result := VPAResponse{
 			VPA:          vpa,
-			Success:      false,
+			Status:       "INVALID",
 			CustomerName: "",
-			Error:        nil,
 		}
 		log.Debug().Msgf("Trying %s", vpa)
 		payload := strings.NewReader(fmt.Sprintf(`{
-			"entity": "vpa",
-			"value": "%s"
+			"merchant_id":"juspay",
+			"vpa": "%s"
 		}`, vpa))
 		req, err := http.NewRequest("POST", url, payload)
 		req.Header.Add("Connection", "close")
@@ -89,7 +88,7 @@ func check_is_a_number(number string) bool {
 	return re.MatchString(number)
 }
 
-func checkUpi(number string, suffixes_array []string, api_key string) {
+func checkUpi(number string, suffixes_array []string) {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -107,7 +106,7 @@ func checkUpi(number string, suffixes_array []string, api_key string) {
 	vpasChan := make(chan string, threads)
 	resultsChan := make(chan VPAResponse)
 	for i := 0; i < threads; i++ {
-		go MakeRequest(vpasChan, resultsChan, api_key)
+		go MakeRequest(vpasChan, resultsChan)
 	}
 
 	go func() {
@@ -119,7 +118,7 @@ func checkUpi(number string, suffixes_array []string, api_key string) {
 	found_any := false
 	for i := 0; i < len(vpas); i++ {
 		result := <-resultsChan
-		if result.Error == nil && result.Success == true && result.CustomerName != "" {
+		if result.Error == nil && result.Status == "VALID" && result.CustomerName != "" {
 			log.Info().Msgf("✅ Customer Name : %s | VPA : %s", result.CustomerName, result.VPA)
 			found_any = true
 		} else {

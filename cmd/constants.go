@@ -13,5 +13,3 @@ const banner = `
 			#  Website : https://aseemshrey.in
 			#  YouTube : https://www.youtube.com/c/HackingSimplifiedAS
 `
-
-var api_key string
