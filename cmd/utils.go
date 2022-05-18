@@ -27,6 +27,7 @@ func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse, api_key
 			CustomerName: "",
 			Error:        nil,
 		}
+		log.Debug().Msgf("Trying %s", vpa)
 		payload := strings.NewReader(fmt.Sprintf(`{
 			"entity": "vpa",
 			"value": "%s"
@@ -121,6 +122,8 @@ func checkUpi(number string, suffixes_array []string, api_key string) {
 		if result.Error == nil && result.Success == true && result.CustomerName != "" {
 			log.Info().Msgf("✅ Customer Name : %s | VPA : %s", result.CustomerName, result.VPA)
 			found_any = true
+		} else {
+			log.Debug().Msgf("Not found VPA's result : %+v", result)
 		}
 	}
 	if found_any == false {

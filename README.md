@@ -1,11 +1,13 @@
 # UPI Recon CLI
-![](images/logo.png) 
+![](images/logo.png)
 
 A command line tool for reconnaissance using virtual payment address (VPA).
 This tool leverages the openness available with the UPI platform to find :
 1. UPI ID and name associated with a mobile number
 2. UPI ID and name associated with a gmail account
 3. UPI ID and name associated with a vehicle registration number. Leveraging UPI id associated with a FASTag.
+
+**NOTE** : You won't get any results as of now, since razorpay has limited the data that was being sent. Need to find alternative APIs that can help with this. Check [Issue#6](https://github.com/LuD1161/upi-recon-cli/issues/6)
 
 This project is a golang port of [upi-recon](https://github.com/qurbat/upi-recon/) by [@squeal](https://twitter.com/squeal).
 
