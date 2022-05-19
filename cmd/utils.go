@@ -28,9 +28,9 @@ func MakeRequest(vpasChan <-chan string, resultsChan chan<- VPAResponse) {
 		}
 		log.Debug().Msgf("Trying %s", vpa)
 		payload := strings.NewReader(fmt.Sprintf(`{
-			"merchant_id":"juspay",
+			"merchant_id":"%s",
 			"vpa": "%s"
-		}`, vpa))
+		}`, merchant, vpa))
 		req, err := http.NewRequest("POST", url, payload)
 		req.Header.Add("Connection", "close")
 		req.Header.Add("Content-Type", "application/json")

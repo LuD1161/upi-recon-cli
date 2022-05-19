@@ -13,3 +13,5 @@ const banner = `
 			#  Website : https://aseemshrey.in
 			#  YouTube : https://www.youtube.com/c/HackingSimplifiedAS
 `
+
+const merchant = "milaap"

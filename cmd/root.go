@@ -53,6 +53,6 @@ func init() {
 	// will be global for your application.
 	fmt.Println(banner)
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
-	rootCmd.PersistentFlags().IntVarP(&threads, "threads", "t", 100, "No of threads")
+	rootCmd.PersistentFlags().IntVarP(&threads, "threads", "t", 10, "No of threads")
 	rootCmd.PersistentFlags().IntVarP(&timeout, "timeout", "", 15, "Timeout for requests")
 }
