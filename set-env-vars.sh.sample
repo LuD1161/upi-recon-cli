@@ -1,0 +1,5 @@
+# Copy this file and rename this from 'set-env-vars.sh.sample' to 'set-env-vars.sh'
+# Set all the env variables here
+#!/bin/bash
+
+export HCAPTCHA_SECRET=VAR_VALUE_HERE
