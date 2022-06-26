@@ -2,148 +2,93 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"regexp"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 )
-
-const siteVerifyURL = "https://hcaptcha.com/siteverify"
 
 var errorLogger = log.New(os.Stderr, "ERROR ", log.Llongfile)
 
 // Regex matches for user input check
 // https://stackoverflow.com/a/38554480
-var isGmail = regexp.MustCompile("[a-zA-Z0-9+_.-]+@gmail.com").MatchString   //"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
-var isMobileNumber = regexp.MustCompile("^[6-9]\\d{9}$").MatchString         //"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
-var isCarReg = regexp.MustCompile("[a-zA-Z]{2}[a-zA-Z0-9]{8-9}").MatchString //"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
+var isMobileNumber = regexp.MustCompile(`^[6-9]\d{9}$`).MatchString //"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
 
-type LoginRequest struct {
-	Email             string `json:"email"`
-	Password          string `json:"password"`
-	RecaptchaResponse string `json:"h-captcha-response"`
-}
+func GetUPI(searchTerm string) LambdaResponse {
+	threads := 8
+	lResponse := LambdaResponse{}
+	Results := []string{}
+	ErrArr := []error{}
+	lResponse.Errors = ErrArr
+	lResponse.Results = Results
 
-type SiteVerifyResponse struct {
-	Success     bool      `json:"success"`
-	Score       float64   `json:"score"`
-	Action      string    `json:"action"`
-	ChallengeTS time.Time `json:"challenge_ts"`
-	Hostname    string    `json:"hostname"`
-	ErrorCodes  []string  `json:"error-codes"`
-}
+	if !isMobileNumber(searchTerm) {
+		lResponse.Errors = append(ErrArr, fmt.Errorf("not a mobile number : %s", searchTerm))
+		return lResponse
+	}
 
-type MyEvent struct {
-	Type             string `json:"type"`
-	SearchTerm       string `json:"searchTerm"`
-	SiteKey          string `json:"siteKey"`
-	HCaptchaResponse string `json:"hcaptcha-response"`
-}
+	vpasChan := make(chan CashF, threads)
+	resultsChan := make(chan HTTPResponse)
 
-func run_scanner(typeOfSearch, searchTerm string) ([]byte, error) {
-	var result []byte
-	var err error
-	app := "./upi-recon-cli"
+	for i := 0; i < threads; i++ {
+		go MakeRequest(vpasChan, resultsChan)
+	}
 
-	arg0 := ""
-
-	log.Printf("Running scanner : %s %s", app, arg0)
-	// Check user input for any malicious input and regex match
-	switch typeOfSearch {
-	case "Gmail":
-		if !isGmail(searchTerm) {
-			return result, errGmail
+	go func() {
+		for _, upiHandle := range UPIHandles {
+			orderHash := fmt.Sprintf("QVsj6YQPg3xq1sLm%s", RandStringBytes(4))
+			data := CashF{
+				VPA:       fmt.Sprintf("%s@%s", searchTerm, upiHandle),
+				OrderHash: orderHash,
+			}
+			vpasChan <- data
 		}
-		arg0 = "checkGpay"
-	case "CarReg":
-		arg0 = "checkFastag"
-		if !isCarReg(searchTerm) {
-			return result, errCarReg
+	}()
+
+	for i := 0; i < len(UPIHandles); i++ {
+		cashFR := CashFResponse{}
+		result := <-resultsChan
+
+		if result.Errors != nil {
+			continue
 		}
-		searchTerm = fmt.Sprintf("netc.%s", searchTerm)
-	default:
-		if !isMobileNumber(searchTerm) {
-			return result, errMobileNumber
+
+		body, err := ioutil.ReadAll(result.Result.Body)
+
+		if err != nil {
+			log.Printf("Error : %s", err.Error())
+			continue
 		}
-		arg0 = ""
+
+		result.Result.Body.Close()
+		err = json.Unmarshal(body, &cashFR)
+
+		if err != nil {
+			log.Printf("Error : %s", err.Error())
+			continue
+		}
+
+		if cashFR.Message.VpaStatus == "AVAILABLE" {
+			// log.Printf("Response : %+v", cashFR)
+			lResponse.Results = append(lResponse.Results, result.VPA)
+		}
 	}
-
-	log.Printf("Running scanner : %s %s", app, arg0)
-	// https://stackoverflow.com/a/7786922
-	cmd := exec.Command(app, arg0, searchTerm)
-	stdout, err := cmd.Output()
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return []byte{}, err
-	}
-	return stdout, err
-}
-
-func CheckRecaptcha(secret, response string) error {
-	req, err := http.NewRequest(http.MethodPost, siteVerifyURL, nil)
-	if err != nil {
-		return err
-	}
-
-	// Add necessary request parameters.
-	q := req.URL.Query()
-	q.Add("secret", secret)
-	q.Add("response", response)
-	req.URL.RawQuery = q.Encode()
-
-	// Make request
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Decode response.
-	var body SiteVerifyResponse
-	if err = json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return err
-	}
-
-	// Check recaptcha verification success.
-	if !body.Success {
-		return errors.New("unsuccessful recaptcha verify request")
-	}
-
-	// Check response score.
-	// if body.Score < 0.5 {
-	// 	return errors.New("lower received score than expected")
-	// }
-
-	// Check response action.
-	// if body.Action != "login" {
-	// 	return errors.New("mismatched recaptcha action")
-	// }
-
-	log.Printf("body.Score : %f | body.Action : %s", body.Score, body.Action)
-	return nil
+	return lResponse
 }
 
 func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	secret := os.Getenv("HCAPTCHA_SECRET")
+	// secret := os.Getenv("HCAPTCHA_SECRET")
 	var data MyEvent
 	err := json.Unmarshal([]byte(req.Body), &data)
-	if err := CheckRecaptcha(secret, data.HCaptchaResponse); err != nil {
-		log.Printf("req : %+v", req)
-		// return serverError(err)
-	}
-
-	results, err := run_scanner(data.Type, data.SearchTerm)
 	if err != nil {
 		return serverError(err)
 	}
+
+	results := GetUPI(data.SearchTerm)
 
 	// The APIGatewayProxyResponse.Body field needs to be a string, so
 	// we marshal the book record into JSON.
@@ -168,18 +113,13 @@ func serverError(err error) (events.APIGatewayProxyResponse, error) {
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusInternalServerError,
-		Body:       http.StatusText(http.StatusInternalServerError),
-	}, nil
-}
-
-// Similarly add a helper for send responses relating to client errors.
-func clientError(status int) (events.APIGatewayProxyResponse, error) {
-	return events.APIGatewayProxyResponse{
-		StatusCode: status,
-		Body:       http.StatusText(status),
+		Body:       fmt.Sprintf("%s : %s", http.StatusText(http.StatusInternalServerError), err.Error()),
 	}, nil
 }
 
 func main() {
-	lambda.Start(HandleRequest)
+	results := GetUPI("9882539413")
+	js, _ := json.Marshal(results)
+	fmt.Printf("%s", js)
+	// lambda.Start(HandleRequest)
 }

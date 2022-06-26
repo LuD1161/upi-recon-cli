@@ -1,4 +1,4 @@
-APP=upi-recon-lambda
+APP=payomoney_kishore
 # https://medium.com/the-go-journey/adding-version-information-to-go-binaries-e1b79878f6f2
 GIT_COMMIT=$(shell git rev-parse --short=10 HEAD)
 
@@ -8,14 +8,17 @@ build-and-execute:
 
 .PHONY: build
 build:
-	GOOS=linux CGO_ENABLED=0 go build -o main *.go
-	GOOS=darwin CGO_ENABLED=0 go build -o ${APP} *.go
+	go build -ldflags "-X main.GitCommit=${GIT_COMMIT}" -o ${APP} *.go
 
 .PHONY: deploy
 deploy:
-	GOOS=linux CGO_ENABLED=0 go build -o main *.go
-	zip -r function.zip main upi-recon-cli data/*
-	mv function.zip ~/Desktop
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main *.go
+	chmod +x create_zip.sh && ./create_zip.sh
+	mv upi_scanner.zip ~/Desktop
+
+.PHONY: run
+run:
+	chmod +x ./set-env-vars.sh && . ./set-env-vars.sh ./${APP}
 
 .PHONY: debug
 debug: 
