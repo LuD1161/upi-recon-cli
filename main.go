@@ -10,6 +10,7 @@ import (
 	"regexp"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 var errorLogger = log.New(os.Stderr, "ERROR ", log.Llongfile)
@@ -118,8 +119,8 @@ func serverError(err error) (events.APIGatewayProxyResponse, error) {
 }
 
 func main() {
-	results := GetUPI("9882539413")
-	js, _ := json.Marshal(results)
-	fmt.Printf("%s", js)
-	// lambda.Start(HandleRequest)
+	// results := GetUPI("9882539413")
+	// js, _ := json.Marshal(results)
+	// fmt.Printf("%s", js)
+	lambda.Start(HandleRequest)
 }
