@@ -1,14 +1,14 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const URL = "https://www.goibibo.com/v2payments/upi/vpa/validate/?vpa="
 
 func RandStringBytes(n int) string {
 	b := make([]byte, n)
@@ -20,20 +20,16 @@ func RandStringBytes(n int) string {
 
 func MakeRequest(payloadsChan <-chan CashF, resultsChan chan<- HTTPResponse) {
 	client := http.Client{Timeout: time.Duration(3) * time.Second}
-	url := "https://payments.cashfree.com/pgbillpayuiapi/upi/validate"
 
 	for payload := range payloadsChan {
-
+		url := fmt.Sprintf("%s%s", URL, payload.VPA)
 		response := HTTPResponse{
 			Result: &http.Response{},
 			Errors: nil,
 			VPA:    payload.VPA,
 		}
 
-		// log.Printf("Payload : %+v", payload)
-		jsonPayload, _ := json.Marshal(payload)
-
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonPayload))
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			response.Errors = err
 			resultsChan <- response

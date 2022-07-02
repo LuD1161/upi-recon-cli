@@ -28,6 +28,14 @@ type CashFResponse struct {
 	} `json:"message"`
 }
 
+type GoIbResponse struct {
+	Error     interface{} `json:"error"`
+	ErrorCode string      `json:"error_code"`
+	Msg       string      `json:"msg"`
+	Name      string      `json:"name"`
+	Status    bool        `json:"status"`
+}
+
 type LambdaResponse struct {
 	Results []string `json:"results"`
 	Errors  []error  `json:"errors"`

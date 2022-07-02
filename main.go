@@ -4,23 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
-
-var errorLogger = log.New(os.Stderr, "ERROR ", log.Llongfile)
 
 // Regex matches for user input check
 // https://stackoverflow.com/a/38554480
 var isMobileNumber = regexp.MustCompile(`^[6-9]\d{9}$`).MatchString //"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
 
 func GetUPI(searchTerm string) LambdaResponse {
-	threads := 8
+	threads := 100
 	lResponse := LambdaResponse{}
 	Results := []string{}
 	ErrArr := []error{}
@@ -51,7 +49,7 @@ func GetUPI(searchTerm string) LambdaResponse {
 	}()
 
 	for i := 0; i < len(UPIHandles); i++ {
-		cashFR := CashFResponse{}
+		goIbiR := GoIbResponse{}
 		result := <-resultsChan
 
 		if result.Errors != nil {
@@ -61,66 +59,87 @@ func GetUPI(searchTerm string) LambdaResponse {
 		body, err := ioutil.ReadAll(result.Result.Body)
 
 		if err != nil {
-			log.Printf("Error : %s", err.Error())
+			log.Info().Msgf("Error : %s", err.Error())
 			continue
 		}
 
 		result.Result.Body.Close()
-		err = json.Unmarshal(body, &cashFR)
+		err = json.Unmarshal(body, &goIbiR)
 
 		if err != nil {
-			log.Printf("Error : %s", err.Error())
+			log.Info().Msgf("Error : %s", err.Error())
 			continue
 		}
 
-		if cashFR.Message.VpaStatus == "AVAILABLE" {
-			// log.Printf("Response : %+v", cashFR)
+		if goIbiR.Name != "" {
+			// log.Info().Msgf("Response : %+v", cashFR)
 			lResponse.Results = append(lResponse.Results, result.VPA)
 		}
 	}
 	return lResponse
 }
 
-func HandleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// secret := os.Getenv("HCAPTCHA_SECRET")
-	var data MyEvent
-	err := json.Unmarshal([]byte(req.Body), &data)
-	if err != nil {
-		return serverError(err)
+func mainHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("SecretCode") != "th1s1sS3r3T" {
+		http.Error(w, "Incorrect SecretCode Header", http.StatusForbidden)
+		return
 	}
 
-	results := GetUPI(data.SearchTerm)
-
-	// The APIGatewayProxyResponse.Body field needs to be a string, so
-	// we marshal the book record into JSON.
-	js, err := json.Marshal(results)
-	if err != nil {
-		return serverError(err)
+	switch r.Method {
+	case "GET":
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"hello":"world"}`))
+	case "POST":
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error decoding request body.", http.StatusBadRequest)
+			return
+		}
+		myEvent := MyEvent{}
+		err = json.Unmarshal(body, &myEvent)
+		if err != nil {
+			http.Error(w, "Error decoding request body.", http.StatusBadRequest)
+			return
+		}
+		results := GetUPI(myEvent.SearchTerm)
+		// The APIGatewayProxyResponse.Body field needs to be a string, so
+		// we marshal the book record into JSON.
+		log.Info().Msgf("Results : %+v", results)
+		js, err := json.Marshal(results)
+		if err != nil {
+			http.Error(w, "Error marshalling results", http.StatusBadGateway)
+			return
+		}
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(js)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintf(w, "I can't do that.")
 	}
-
-	// Return a response with a 200 OK status and the JSON book record
-	// as the body.
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       string(js),
-	}, nil
-}
-
-// Add a helper for handling errors. This logs any error to os.Stderr
-// and returns a 500 Internal Server Error response that the AWS API
-// Gateway understands.
-func serverError(err error) (events.APIGatewayProxyResponse, error) {
-	errorLogger.Println(err.Error())
-
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusInternalServerError,
-		Body:       fmt.Sprintf("%s : %s", http.StatusText(http.StatusInternalServerError), err.Error()),
-	}, nil
 }
 
 func main() {
-	// results := GetUPI("9882539413")
-	// js, _ := json.Marshal(results)
-	// fmt.Printf("%s", js)
-	lambda.Start(HandleRequest)
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	switch os.Getenv("LogLevel") {
+	case "Debug":
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		log.Logger = log.With().Timestamp().Stack().Caller().Logger()
+	case "Error":
+		log.Logger = log.With().Timestamp().Stack().Caller().Logger()
+		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+	default:
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
+	http.HandleFunc("/", mainHandler)
+	port := "3133"
+	done := make(chan bool)
+	go http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", port), nil)
+	log.Info().Msgf("Server listening on port 0.0.0.0:%s", port)
+	<-done
 }
