@@ -1,5 +1,5 @@
 # UPI Recon CLI
-![](images/logo.png)
+![](images/logo-2.png)
 
 **This tool doesn't work right now, as it depends on 3rd party APIs that aren't working the way they were.**
 
