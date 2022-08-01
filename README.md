@@ -1,11 +1,13 @@
 # UPI Recon CLI
 ![](images/logo.png)
 
+**This tool doesn't work right now, as it depends on 3rd party APIs that aren't working the way they were.**
+
 A command line tool for reconnaissance using virtual payment address (VPA).
 This tool leverages the openness available with the UPI platform to find :
 1. UPI ID and name associated with a mobile number
 2. UPI ID and name associated with a gmail account
-3. UPI ID and name associated with a vehicle registration number. Leveraging UPI id associated with a FASTag.
+3. UPI ID and name associated with a vehicle registration number. Leveraging UPI id associated with a fastag.
 
 This project is a golang port of [upi-recon](https://github.com/qurbat/upi-recon/) by [@squeal](https://twitter.com/squeal).
 
@@ -33,7 +35,7 @@ Usage:
 
 Available Commands:
   checkAll    Check a particular number against all UPI identifiers.
-  checkFastag Check FASTag suffixes for vehicle registration number.
+  checkFastag Check Fast tag suffixes for vehicle registration number.
   checkGpay   Check gmail id corresponding to GPay suffixes.
   help        Help about any command
 
@@ -96,7 +98,7 @@ You'd find the following file strucuture inside the extracted folder :
 ## Acknowledgements
 
 - Karan S ([@squeal](https://twitter.com/squeal)): authored upi-recon
-- Srikanth L ([@logic](https://twitter.com/logic)): contributed suffix files, introduced support for Google Pay & FASTag addresses
+- Srikanth L ([@logic](https://twitter.com/logic)): contributed suffix files, introduced support for Google Pay & Fast tag addresses
 
 ## 🚀 About Me
 
